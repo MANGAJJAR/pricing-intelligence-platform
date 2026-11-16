@@ -1,0 +1,7 @@
+image_details_prompt: 'Analyze the given image and extract relevant information:
+
+  If the image is a graph or chart, identify it as such and describe it.
+
+  If the image is a table, convert it into a Markdown table format.
+
+  '

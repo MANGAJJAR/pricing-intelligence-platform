@@ -1,0 +1,10 @@
+derived_adverse_reaction_weeks_prompt: 'Convert durations into weeks:
+
+  Median duration: {Median_duration_of_treatment}
+
+  Max duration: {Max_duration_of_treatment}
+
+  Output JSON array: [{{"median_duration_of_treatment_(weeks)": "value", "max_duration_of_treatment_(weeks)":
+  "value"}}]
+
+  '

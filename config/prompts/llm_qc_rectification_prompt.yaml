@@ -1,0 +1,163 @@
+llm_qc_rectification_prompt: "You are an AI assistant tasked with correcting data\
+  \ errors.\n\nHere is a data record that failed a quality check: {record_json}\n\
+  The following QC check(s) failed for this record: {check_errors}\nHere are the validation\
+  \ rules for the affected field(s): {validation_rules}\n\nBased on the above, please\
+  \ provide the corrected value(s) for the erroneous field(s). Only provide corrections\
+  \ for the fields that need fixing.\n\nOutput format should be a JSON object like\
+  \ this:\n{{\n    \"field_name_1\": \"corrected_value_1\",\n    \"field_name_2\"\
+  : \"corrected_value_2\"\n}}\nIf no correction is needed or you cannot determine\
+  \ a correction, return an empty JSON object {{}}\n\n\n\n\n  prompt = \"\"\"You are\
+  \ a medical pharma data text bot that extracts drug indications and the recommended\
+  \ dosage for \"\"\" + Stringp + \"\"\"along with the frequency\n  on which drug\
+  \ should be taken and the total duration of treatment. In case dosage varies with\
+  \ time or cycle extract that too.\n\n  Definitions of Parameters:\n  - **Dosage\
+  \ Scenario**: It is array of objects of recommended dosage and other parameters.\n\
+  \  - **Recommended Dosage**: Extract the complete dose and administration schedule\
+  \ for the primary drug and all combination therapies in a single string. Include\
+  \ dosage amount, unit, frequency, modifiers, route (if specified in dosage text),\
+  \ and schedule for all components.\n      - If the dosage differs based on weight\
+  \ ranges (e.g., `<45kg`, `\u226545kg`), extract **a separate JSON object** for each\
+  \ weight-defined group. Each object should include all relevant fields with values\
+  \ specific to that weight range.\n      - If weight based dosage is found then split\
+  \ it based on weight in different objects of Dosage_Scenario.\n      - Extract only\
+  \ the core dosage expression (amount, unit, frequency, and immediate schedule),\
+  \ strictly excluding any text detailing indications, conditions for adjustment,\
+  \ or co-administered drugs. For complex schedules, capture the full regimen.\n \
+  \     - For mentions of frequency, replace 'every X weeks' with 'qXW' (e.g., 'every\
+  \ 3 weeks' should become 'q3W', 'every 6 weeks' should become 'q6W'). Apply this\
+  \ transformation consistently.\n      - Prefer \"once daily\" over \"daily\" for\
+  \ the same frequency. Treat \"with\" and \"+\" as equivalent indicators of combination\
+  \ therapy and consistently use \"with\" in the output.\n      - Treat \"OR\" and\
+  \ \";\" as equivalent separators for alternative dosages or combination regimens.\
+  \ Represent these consistently (e.g., using \"or\"). Clearly indicate alternative\
+  \ combination options (e.g., \"with drug A or drug B\").\n      - Be concise, avoiding\
+  \ separate rows for minor phrasing variations while capturing distinct dosage regimens\
+  \ (monotherapy vs. combination).\n  - **Cycle Duration (Weeks)**: Determine the\
+  \ duration of a single treatment cycle in weeks. If the text specifies a cycle length\
+  \ in days (e.g., \"every 21 days\", \"28-day cycles\"), convert it to weeks (3 weeks,\
+  \ 4 weeks). If multiple cycle durations are mentioned (e.g., based on different\
+  \ phases of treatment or different dosage schedules), provide them separated by\
+  \ \"or\" (e.g., \"3 or 6\"). If no clear cycle is defined, use \"N/A\" or \"Continuous\"\
+  \ if the treatment is ongoing without defined breaks.\n  - **Max Cycles**: Extract\
+  \ the maximum number of planned treatment cycles if explicitly stated, including\
+  \ any associated dosing frequency (e.g., \"32 cycles (q3w)\"). If multiple possibilities\
+  \ are given, extract the full phrasing for each. If both 'Max Duration (Weeks)'\
+  \ and 'Cycle Duration (Weeks)' have defined numerical values for a given treatment\
+  \ regimen, calculate 'Max Cycles' by dividing 'Max Duration (Weeks)' by 'Cycle Duration\
+  \ (Weeks)' and provide the rounded whole number, including the associated cycle\
+  \ duration frequency if available in the context (e.g., if cycle duration is consistently\
+  \ \"every 3 weeks\", the output should be \"[calculated number] cycles (q3w)\").\
+  \ If there are 'or' conditions for either duration, perform the calculation for\
+  \ each combination and present the results separated by \"or\", including the associated\
+  \ frequency if available. If the treatment continues until progression or indefinitely,\
+  \ use \"N/A (until progression)\". If the number of cycles depends on other factors\
+  \ or is described non-numerically, extract that description. Use \"N/A\" if no information\
+  \ is available. Use \"~\" for approximate values.\n      - e.g., Cycle Duration\
+  \ (Weeks) = 3 or 6 , Max Duration (Weeks) = 104 then Max Cycles = 34.6 cycles (q3w)\
+  \ or 17.3 cycles (q6w) , Calculation: For a 3-week cycle, the maximum number of\
+  \ cycles would be 104/3 = \u224834.67, which rounds to 34.6 cycles. For a 6-week\
+  \ cycle, the maximum number of cycles would be 104/6 = \u224817.33, which rounds\
+  \ to 17.3 cycles. If a numerical value is found, format it to one decimal place\
+  \ (e.g., '17.4').\n  - **Max Duration (Weeks)**: Determine the maximum intended\
+  \ duration of the treatment in weeks. Convert any time units (days, months, years)\
+  \ to weeks. If a maximum duration is given (e.g., \"up to 52 weeks\", \"for 2 years\"\
+  ), extract **only the numerical value representing the number of weeks (e.g., 52,\
+  \ 104). If the duration is described using both months and weeks (e.g., \"3 months\
+  \ or 12 weeks\"), prioritize and extract only the numerical value of weeks (12).\
+  \ If multiple durations are given solely in weeks (e.g., \"up to 52 or 78 weeks\"\
+  ), provide the numerical values separated by \"or\" (e.g., \"52 or 78\").** If the\
+  \ duration is described as \"N/A (until progression)\" or is open-ended maintenance,\
+  \ use \"Undefined\" or a similar clear term. If a median treatment duration is provided,\
+  \ use that value and indicate it as \"median ~XX\" followed by the number (e.g.,\
+  \ \"median ~50\").\n  - **Set Duration Under 1 Year**: Indicate if the 'Max Duration\
+  \ (Weeks)' is less than or equal to 51 weeks. If yes, use \"Yes\"; if the 'Max Duration\
+  \ (Weeks)' is greater than or equal to 52 weeks, use \"No\".\n  - Total Dosage Estimate\
+  \ - Provide an estimate of the total dosage based on the 'Recommended Dosage' and\
+  \ 'Max Cycles'.\n      - If 'Max Cycles' has a numerical value and 'Recommended\
+  \ Dosage' indicates a dose per cycle or a frequency within a defined cycle, represent\
+  \ the estimate as \"[dosage amount] \xD7 [number of cycles] cycles\".\n      - If\
+  \ either 'Recommended Dosage' or 'Max Cycles' have \"OR\" options (and 'Max Cycles'\
+  \ contains numerical values), perform the multiplication for each combination and\
+  \ present the results separated by \"OR\".\n      - If 'Max Cycles' is \"N/A\" (until\
+  \ progression), \"Continuous\", or similar terms indicating an undefined endpoint,\
+  \ use \"Continuous dosing\" or a similar phrase. If the 'Recommended Dosage' specifies\
+  \ a dose and frequency, you can include that context (e.g., \"Continuous dosing\
+  \ of 100 mg daily\").\n      - If 'Recommended Dosage' is highly variable (e.g.,\
+  \ weight-based without a defined duration or cycles), use \"Variable\" or \"Based\
+  \ on body weight\".\n      - If 'Recommended Dosage' includes combination therapy,\
+  \ integrate the total estimate for the primary drug (if calculable) with a description\
+  \ of the combination therapy's duration or nature (e.g., \"200 mg \xD7 32 cycles\
+  \ + continuous [combination drug]\").\n  - **Yearly Dosage**: Estimate the total\
+  \ dosage of the primary drug administered within one year (52 weeks), derived from\
+  \ the \"Total Dosage Estimate\".\n      - If \"Total Dosage Estimate\" is in the\
+  \ format \"[amount] mg \xD7 [number] cycles\", calculate the total dosage (amount\
+  \ \xD7 number). If there are \"or\" options, calculate each total dosage. Requiere\
+  \ only values of \"Yearly Dose\".\n      - If multiple \"or\" options result in\
+  \ different yearly totals, list them separated by \"or\". If multiple \"or\" options\
+  \ result in the same yearly total, list that total only once. (e.g., if 3400 mg\
+  \ or 3400 mg then value is 3400 mg)\n      - If \"Total Dosage Estimate\" indicates\
+  \ \"Continuous dosing\" or a similar phrase, and if a daily or weekly dose is specified\
+  \ in the \"Recommended Dosage\", calculate the estimated yearly dose based on that\
+  \ frequency. If the continuous dosing doesn't have a clear per-day/week dose, use\
+  \ \"Continuous dosing (yearly estimate may vary)\".\n      - If \"Total Dosage Estimate\"\
+  \ is \"Variable\" or \"Based on body weight\", then \"Yearly Dosage\" should also\
+  \ be \"Variable\" or \"Based on body weight\".\n      - For estimates involving\
+  \ a limited treatment duration, if a total dose over that period can be calculated,\
+  \ provide that total and indicate the duration. If it's continuous over a limited\
+  \ duration, estimate the total for that duration.\n      - If \"Total Dosage Estimate\"\
+  \ includes combination therapies, focus the yearly calculation on the primary drug\
+  \ if quantifiable, and append information about continuous combination drugs.\n\
+  \      - The output should be the dosage value and unit (e.g., '3400 mg'). Do not\
+  \ include '/year' or similar time indicators.\n  - **Doses per Year**: Calculate\
+  \ the approximate number of doses a patient would receive in a 365-day year based\
+  \ on the frequency specified in the \"Recommended Dosage\" (e.g., \"q3w\" -> approximately\
+  \ 17). If multiple dosing frequencies are mentioned (e.g., \"weekly then bi-weekly\"\
+  ), calculate an approximate average annual number of doses considering the duration\
+  \ of each phase if that information is available in other columns like \"Max Cycles\"\
+  \ or \"Max Duration (Weeks)\". Round the final numerical result to the nearest whole\
+  \ number. If the \"Recommended Dosage\" offers multiple frequencies (e.g., \"q3w\
+  \ OR q6w\"), calculate and provide both rounded yearly doses separated by \"or\"\
+  \ (e.g., \"17 or 9\"). Remove any parentheses or non-numerical text associated with\
+  \ the frequency. If no clear frequency can be determined, output \"N/A\".\n  - **Initial\
+  \ Year Dosage**: Extract the dose and unit of the first distinct phase of a multi-phase\
+  \ or escalating dosage regimen. If only a single, continuous, or non-phased dosage\
+  \ is described, output \"N/A\". This field should not be an annual total, but rather\
+  \ the dose of the initial phase itself.\n  - **Flat Dose**: Extract the numerical\
+  \ value of the flat dose in milligrams (mg) if explicitly stated in the \"Recommended\
+  \ Dosage\" (e.g., \"200 mg IV q3w\" -> \"200 mg\"). If the \"Recommended Dosage\"\
+  \ indicates a weight-based dose (e.g., \"2 mg/kg every 3 weeks (max 200 mg)\") and\
+  \ a specific weight is available in the \"Weight (kg)\" column, calculate the flat\
+  \ dose based on that weight, respecting any maximum dose. The output should be the\
+  \ dosage value and unit (e.g., '200 mg'). If a weight-based dose is mentioned but\
+  \ no specific weight is available, output \"NA\".\n  - **Dosing Segment Used**:\
+  \ Identify and provide the specific portion of the \"Recommended Dosage\" that was\
+  \ used to determine the \"Flat Dose\", \"mg per Dose\", and \"Doses per Year\".\
+  \ For example, if the \"Recommended Dosage\" is \"200 mg IV q3w OR 400 mg IV q6w\"\
+  \ and the calculations were based on the first option, output \"200 mg IV q3w\"\
+  . If a weight-based dose was capped by a maximum, include that information (e.g.,\
+  \ \"2 mg/kg q3w (max 200 mg)\"). For complex or multi-phase dosing, provide the\
+  \ segment that was primarily used for the yearly calculation or indicate \"Complex\
+  \ Dosing - See Recommended Dosage\" if a single segment isn't representative.\n\
+  \  - **Route of Administration**: Extract the route(s) of drug administration for\
+  \ all drugs mentioned in the Recommended Dosage. If multiple drugs in a combination\
+  \ have different routes, combine them into a single string using the \"+\" sign\
+  \ to separate each drug and its route in parentheses (e.g., \"Oral (IBRANCE) + IM\
+  \ (fulvestrant)\"). Ensure that the route for each component of a combination therapy\
+  \ is explicitly stated if available in the text. If only one route is mentioned\
+  \ for the primary drug and the routes of combination drugs are unclear, provide\
+  \ the known route for the primary drug (e.g., \"Oral (IBRANCE)\").\n  - **Treatment\
+  \ is based on**: Specify if the treatment duration/cycles are based on factors like\
+  \ response, progression, or a fixed schedule. If recommeded dosage contain weight\
+  \ (80kg, <80kg , >70kg etc.) then response should be \"Weight based\".\n  - **Notes**:\
+  \ Any additional relevant information or specific instructions regarding dosage\
+  \ or administration.\n  - **Medications**: If the drug is used in combination, list\
+  \ the names of the other medications involved (e.g., 'aromatase inhibitor or fulvestrant').\
+  \ If no combination, use 'N/A'.\n  - **Patient Group**: Extract the primary patient\
+  \ group for which the dosage is recommended. Output only one of the following: 'Adult'\
+  \ or 'Pediatric'. If the dosage applies to both adult and pediatric patients, categorize\
+  \ it based on the most prominent or initial target group as described in the text,\
+  \ or by your pre-defined internal rule (e.g., if any pediatric mention, categorize\
+  \ as 'Pediatric').\n  - **Pediatric Patient**: Indicate if the treatment is applicable\
+  \ to any pediatric patient group. Output only one of the following: 'Yes' or 'No'.\
+  \ If the 'Patient Group' is 'Pediatric', this field should be 'Yes'. If the 'Patient\
+  \ Group' is 'Adult', this field should be 'No'.\n"

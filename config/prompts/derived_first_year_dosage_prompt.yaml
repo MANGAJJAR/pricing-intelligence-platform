@@ -1,0 +1,12 @@
+derived_first_year_dosage_prompt: 'Calculate first year dosage based on:
+
+  Recommended Dosage: {Recommended_Dosage}
+
+  Cycle Duration: {Cycle_Duration}
+
+  Duration of Treatment: {Duration_of_Treatment}
+
+  Output JSON array: [{{"first_year_dosage_in_mg": "value", "number_of_doses_in_first_year":
+  "value"}}]
+
+  '

@@ -1,0 +1,59 @@
+dosage_details_prompt: "You are a medical pharma data text bot that extracts the recommended\
+  \ dosage for {Stringp}  and {additional_info} along with the frequency\non which\
+  \ drug should be taken and the total duration of treatment. The annotation of weekly\
+  \ frequency should be qxw where x represent number of weeks. For daily frequencies,\
+  \ convert to 'qXd' format (e.g., 'once daily' becomes 'q1d', 'twice daily' becomes\
+  \ 'q2d').\nIn case dosage varies with time or cycle or weight , then add/create\
+  \ a separate Dosage object for each recommended dosage scenario.\nThe frequency\
+  \ of the Dosage should be in the days or weeks.\nExtract the method of administration\
+  \ (how the drug is administered) sample 'IV','Oral','Subcutaneous' etc.\nExtract\
+  \ the Patient group whether adult or pediatric.\nCalculate whether Max duration\
+  \ in Greater than a year. If so then answer Yes else No.\nIn case minimum Value\
+  \ is available and Maximum value is unavailable then the Max Duration is undefined.\n\
+  Calculate total number of cycles based on frequency and duration of treatment.\n\
+  The Flat dose is to be calculated as the initial Dose to be given to the patient\
+  \ before the regular dosage beginning.\nProvide  weight(kg) column with weight value\
+  \  if the dose is based on weight else mark as \"Not weight Based\". Add the less\
+  \ than or greater than signs if applicable and provide the data in 2 rows.\nProvide\
+  \  Dose per Kg column with Dosage value required for subsequent weight if the dose\
+  \ is based on weight else mark as \"Not weight Based\".\nDosing segment used is\
+  \ to be calculated as \"dosage amount freuency in weeks * number of doses\"\n  -\
+  \ **Dosage Scenario**: It is array of objects of recommended dosage and other parameters.\n\
+  \n**NOTES**\n1. ***for scenario based dosage split recommended dosage in different\
+  \ objects of Dosage_Scenario. examples: 'weight scenario' , 'option 1/2 scenario',\
+  \ 'time or cycle scenario' etc.***\n2. Extract all the information for the mentioned\
+  \ indication: {indication}, which has short form {short_form_of_indication} only\n\
+  3. Extract details of all regimens.\n4. If there are multiple, distinct 'Recommended\
+  \ Dosage' values or scenarios (e.g., varying by weight, time, or different regimen\
+  \ options), extract each unique 'Recommended Dosage' and its associated parameters\
+  \ as a SEPARATE Dosage_Scenario object within the 'Dosage_Scenario' array.\n5. Don't\
+  \ extract \"Dosage Modifications\" for mentioned indication: {indication}.\n6. If\
+  \ \"Cycle Duration\" contain two diffrent scenario based on weight or age then split\
+  \ it into diffrent row.\n\nUse the information provided in below context only. If\
+  \ the context doesn't provide the relavant information then mention as N/A in the\
+  \ particular key of JSON output.\njson format:\n```\n[{{\n    \"Dosage_Scenario\"\
+  : [\n        {{\n            \"Recommended Dosage\": ,\n            \"Cycle Duration\"\
+  :,\n            \"Duration of Treatment\":,\n            \"Set Duration less than\
+  \ a Year\":,\n            \"Number of Cycles\":,\n            \"Treatment is based\
+  \ on\":,\n            \"Method of Administration\":,\n            \"Patient Group\"\
+  :,\n            \"Is Pediatric\":,\n            \"weight(kg)\":,\n            \"\
+  Dose per Kg\":,\n            \"Flat Dose\":,\n            \"mg per Dose\":,\n  \
+  \          \"Dosing segment Used\":,\n            \"medications\": ,\n         \
+  \   \"Notes\":\n        }},\n        {{\n            \"Recommended Dosage\": ,\n\
+  \            \"Cycle Duration\":,\n            \"Duration of Treatment\":,\n   \
+  \         \"Set Duration less than a Year\":,\n            \"Number of Cycles\"\
+  :,\n            \"Treatment is based on\":,\n            \"Method of Administration\"\
+  :,\n            \"Patient Group\":,\n            \"Is Pediatric\":,\n          \
+  \  \"weight(kg)\":,\n            \"Dose per Kg\":,\n            \"Flat Dose\":,\n\
+  \            \"mg per Dose\":,\n            \"Dosing segment Used\":,\n        \
+  \    \"medications\": ,\n            \"Notes\":\n        }}\n    ]\n}}]\n```\n\n\
+  Example:\n\n      \"Recommended Dosage\": \"2 mg (0.05 mL of 40 mg/mL solution)\"\
+  ,\n      \"Cycle Duration\": \"q4w for first 12 weeks, then q8w\",\n      \"Duration\
+  \ of Treatment\": \"Continuous with regular assessment\",\n      \"Set Duration\
+  \ less than a Year\": \"No\",\n      \"Number of Cycles\": \"N/A (continuous treatment)\"\
+  ,\n      \"Treatment is based on\": \"Fixed dosing\",\n      \"Method of Administration\"\
+  : \"Intravitreal injection\",\n      \"Patient Group\": \"Adult\",\n      \"Is Pediatric\"\
+  : \"No\",\n      \"weight(kg)\": \"Not weight Based\",\n      \"Dose per Kg\": \"\
+  Not weight Based\",\n      \"Flat Dose\": \"2 mg\",\n      \"mg per Dose\": \"2\"\
+  ,\n      \"Dosing segment Used\": \"2mg q4w \xD7 3, then 2mg q8w \xD7 6\",\n\ncontext:\n\
+  ```\n"

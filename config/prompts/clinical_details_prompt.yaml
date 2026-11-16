@@ -1,0 +1,3 @@
+clinical_details_prompt: 'Extract clinical trial details from the text: {stringc}
+
+  Output JSON format with study_id, patient_count, trial_phase, primary_endpoints.'

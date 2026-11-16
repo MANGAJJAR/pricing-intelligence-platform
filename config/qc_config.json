@@ -1,0 +1,524 @@
+{
+    "qc_checks": {
+
+      "drug_link_id Leading/Trailing Whitespace": {
+            "type": "leading_trailing_whitespace",
+            "columns": ["drug_link_id"]
+        },
+      "drug_link_id_invalid_format": {
+            "type": "regex_not_match",
+            "columns": ["drug_link_id"],
+            "pattern": "^[a-f0-9\\-]{36}$",
+            "ignore_case": true
+        },
+
+        "drug_url Leading/Trailing Whitespace": {
+            "type": "leading_trailing_whitespace",
+            "columns": ["drug_url"]
+        },
+        "drug_url_invalid_format": {
+            "type": "regex_not_match",
+            "columns": ["drug_url"],
+            "pattern": "^https://dailymed\\.nlm\\.nih\\.gov/dailymed/.*$",
+            "ignore_case": true
+        },
+
+      "Drug_name - Leading/Trailing Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["drug_name"]
+      },
+      "Drug_name - Inconsistent for NDC": {
+        "type": "inconsistent_values", "group_by": "drug_link_id", "target": "drug_name"
+      },
+
+
+      "Manufacturer - Leading/Trailing Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["manufacturer"]
+      },
+      "Manufacturer - Inconsistent for NDC": {
+        "type": "inconsistent_values", "group_by": "drug_link_id", "target": "manufacturer"
+      },
+
+
+      "duplicate_primary_key": {
+          "type": "duplicate_key_check",
+          "columns": ["drug_name", "indication", "drug_link_id", "disease_full",
+              "indication",
+              "subindications",
+              "usage",
+              "lineoftherapy",
+              "typeoftherapy",
+              "combinationdrug"]
+      },
+
+      "null_threshold_check": {
+          "type": "null_threshold"
+      },
+
+      "all_columns_illegal_formatting": {
+          "type": "illegal_formatting_all_columns"
+      },
+
+
+      "schema_validation": {
+          "type": "schema_check", "expected_columns": {
+                  "drug_link_id": "string",
+                  "drug_url": "string",
+                  "drug_name": "string",
+                  "manufacturer": "string",
+                  "disease_full": "string",
+                  "disease_short": "string",
+                  "indication": "string",
+                  "subindications": "string",
+                  "usage": "string",
+                  "lineoftherapy": "string",
+                  "line_of_therapy_simplified": "string",
+                  "typeoftherapy": "string",
+                  "combinationdrug": "string",
+                  "combo_therapy_flag": "string",
+                  "combo_1": "string",
+                  "combo_2": "string",
+                  "combo_3": "string",
+                  "recommended_dosage": "string",
+                  "cycle_duration": "string",
+                  "duration_of_treatment": "string",
+                  "set_duration_less_than_a_year": "string",
+                  "number_of_cycles": "string",
+                  "treatment_is_based_on": "string",
+                  "method_of_administration": "string",
+                  "patient_group": "string",
+                  "is_pediatric": "string",
+                  "weightkg": "string",
+                  "dose_per_kg": "string",
+                  "flat_dose": "string",
+                  "mg_per_dose": "string",
+                  "dosing_segment_used": "string",
+                  "medications": "string",
+                  "notes": "string",
+                  "yearly_dosage": "string",
+                  "yearly_cycles": "string",
+                  "subsequent_year_dosage_in_mg": "string",
+                  "number_of_doses_in_subsequent_years": "string",
+                  "first_year_dosage_in_mg": "string",
+                  "number_of_doses_in_first_year": "string",
+                  "adverse_reaction_study_id": "string",
+                  "adverse_reaction_median_duration_of_treatment": "string",
+                  "adverse_reaction_max_duration_of_treatment": "string",
+                  "adverse_reaction_median_duration_of_treatment_weeks": "string",
+                  "adverse_reaction_max_duration_of_treatment_weeks": "string",
+                  "derived_duration_of_treatment": "string",
+                  "derived_set_duration_under_1_year": "string",
+                  "created_date": "timestamp",
+                  "modified_date": "timestamp",
+                  "processed_by": "string",
+                  "job_id": "string",
+                  "active_flag": "string"
+          }
+      },
+
+
+      "Disease_full - Leading/Trailing Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["disease_full"]
+      },
+
+      "Disease_short - Leading/Trailing Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["disease_short"]
+      },
+
+
+      "Indication - Leading/Trailing Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["indication"]
+      },
+
+
+      "Subindications - Leading/Trailing Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["subindications"]
+      },
+
+
+      "Usage - Leading/Trailing Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["usage"]
+      },
+
+
+      "LineofTherapy - Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["lineoftherapy"]
+      },
+
+
+      "Line_of_therapy_simplified - Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["line_of_therapy_simplified"]
+      },
+
+
+      "Type of Therapy - Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["typeoftherapy"]
+      },
+
+
+      "Combo_Therapy_Flag - Whitespace": {
+        "type": "leading_trailing_whitespace", "columns": ["combo_therapy_flag"]
+      },
+
+      "Combo_Therapy_Flag - Invalid Values": {
+        "type": "not_in_set",
+        "columns": ["combo_therapy_flag"],
+        "allowed": ["yes", "no"]
+      },
+
+      "combo_flag_yes_but_no_combo_values": {
+          "type": "combo_flag_yes_requires_combo",
+          "columns": ["combinationdrug", "combo_therapy_flag", "combo_1", "combo_2", "combo_3"]
+      },
+      "combo_flag_no_but_has_combo_values": {
+          "type": "combo_flag_no_requires_no_combo",
+          "columns": ["combinationdrug", "combo_therapy_flag", "combo_1", "combo_2", "combo_3"]
+      },
+
+
+      "combinationdrug_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["combinationdrug"]
+      },
+
+
+      "combo_1_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["combo_1"]
+      },
+
+
+      "combo_2_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["combo_2"]
+      },
+
+
+      "combo_3_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["combo_3"]
+      },
+
+
+      "recommendeddosage_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["recommended_dosage"]
+      },
+
+
+      "cycleduration_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["cycle_duration"]
+      },
+      "cycleduration_negative": {
+          "type": "less_than_or_equal_to_value",
+          "columns": ["cycle_duration"],
+          "clean": true,
+          "threshold": 0
+      },
+      "cycleduration_invalid_frequency": {
+          "type": "regex_not_match", "columns": ["cycle_duration"],
+          "pattern": "^q\\d+[dwm]$", "ignore_case": true
+      },
+
+
+      "durationoftreatment_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["duration_of_treatment"]
+      },
+
+
+      "setdurationlessthanayear_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["set_duration_less_than_a_year"]
+      },
+      "setdurationlessthanayear_invalid_values": {
+          "type": "not_in_set",
+          "columns": ["set_duration_less_than_a_year"],
+          "allowed": ["yes", "no"]
+      },
+
+
+      "numberofcycles_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["number_of_cycles"]
+      },
+
+
+      "treatmentisbasedon_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["treatment_is_based_on"]
+      },
+
+
+      "methodofadministration_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["method_of_administration"]
+      },
+
+
+
+      "patientgroup_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["patient_group"]
+      },
+
+
+      "ispediatric_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["is_pediatric"]
+      },
+
+
+
+      "flatdose_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["flat_dose"]
+      },
+
+
+      "weightkg_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["weightkg"]
+      },
+
+
+      "mgperdose_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["mg_per_dose"]
+      },
+      "mgperdose_non_numeric": {
+          "type": "non_numeric", "columns": ["mg_per_dose"]
+      },
+      "mgperdose_negative_or_zero": {
+          "type": "less_than_or_equal_to_value", "columns": ["mg_per_dose"], "threshold": 0
+      },
+
+
+      "dosingsegmentused_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["dosing_segment_used"]
+      },
+
+
+      "medications_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["medications"]
+      },
+
+
+
+      "notes_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["notes"]
+      },
+
+
+
+      "yearlydosage_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["yearly_dosage"]
+      },
+      "yearlydosage_non_numeric": {
+          "type": "non_numeric", "columns": ["yearly_dosage"]
+      },
+      "yearlydosage_negative": {
+          "type": "less_than_or_equal_to_value", "columns": ["yearly_dosage"], "threshold": 0
+      },
+
+
+
+      "yearlycycles_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["yearly_cycles"]
+      },
+
+
+
+      "subsequentyeardosageinmg_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["subsequent_year_dosage_in_mg"]
+      },
+      "subsequentyeardosageinmg_non_numeric": {
+          "type": "non_numeric", "columns": ["subsequent_year_dosage_in_mg"]
+      },
+      "subsequentyeardosageinmg_negative": {
+          "type": "less_than_or_equal_to_value", "columns": ["subsequent_year_dosage_in_mg"], "threshold": 0
+      },
+
+
+
+      "numberofdosesinsubsequentyears_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["number_of_doses_in_subsequent_years"]
+      },
+      "numberofdosesinsubsequentyears_non_numeric": {
+          "type": "non_numeric", "columns": ["number_of_doses_in_subsequent_years"]
+      },
+      "numberofdosesinsubsequentyears_negative": {
+          "type": "less_than_or_equal_to_value", "columns": ["number_of_doses_in_subsequent_years"], "threshold": 0
+      },
+
+
+
+      "firstyeardosageinmg_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["first_year_dosage_in_mg"]
+      },
+      "firstyeardosageinmg_non_numeric": {
+          "type": "non_numeric", "columns": ["first_year_dosage_in_mg"]
+      },
+      "firstyeardosageinmg_negative": {
+          "type": "less_than_or_equal_to_value", "columns": ["first_year_dosage_in_mg"], "threshold": 0
+      },
+
+
+
+      "numberofdosesinfirstyear_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["number_of_doses_in_first_year"]
+      },
+      "numberofdosesinfirstyear_non_numeric": {
+          "type": "non_numeric", "columns": ["number_of_doses_in_first_year"]
+      },
+      "numberofdosesinfirstyear_negative": {
+          "type": "less_than_or_equal_to_value", "columns": ["number_of_doses_in_first_year"], "threshold": 0
+      },
+
+
+
+      "adverse_reaction_study_id_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["adverse_reaction_study_id"]
+      },
+      "unique_study_id_per_condition_combo": {
+          "type": "inconsistent_grouping_unique",
+          "group_by": [
+              "disease_full",
+              "indication",
+              "subindications",
+              "usage",
+              "lineoftherapy",
+              "typeoftherapy",
+              "combinationdrug"
+          ],
+          "target": "adverse_reaction_study_id"
+          },
+
+
+      "adverse_reaction_mediandurationoftreatment_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["adverse_reaction_median_duration_of_treatment"]
+      },
+
+      "adverse_reaction_mediandurationoftreatment_invalid_format": {
+          "type": "regex_not_match",
+          "columns": ["adverse_reaction_median_duration_of_treatment"],
+          "pattern": "^(n/a|[0-9.]+\\s*(months?|years?|weeks?))$",
+          "ignore_case": true
+      },
+
+      "adverse_reaction_mediandurationoftreatment_negative": {
+          "type": "less_than_or_equal_to_value_extracted",
+          "columns": ["adverse_reaction_median_duration_of_treatment"],
+          "threshold": 0,
+          "number_extract_regex": "^([0-9.]+)"
+      },
+
+
+
+      "adverse_reaction_mediandurationoftreatmentweeks_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["adverse_reaction_median_duration_of_treatment_weeks"]
+      },
+      "adverse_reaction_mediandurationoftreatmentweeks_non_numeric": {
+          "type": "non_numeric", "columns": ["adverse_reaction_median_duration_of_treatment_weeks"]
+      },
+      "adverse_reaction_mediandurationoftreatmentweeks_negative": {
+          "type": "less_than_or_equal_to_value", "columns": ["adverse_reaction_median_duration_of_treatment_weeks"], "threshold": 0
+      },
+
+
+
+
+      "adverse_reaction_maxdurationoftreatment_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["adverse_reaction_max_duration_of_treatment"]
+      },
+      "adverse_reaction_maxdurationoftreatment_invalid_format": {
+          "type": "regex_not_match",
+          "columns": ["adverse_reaction_max_duration_of_treatment"],
+          "pattern": "^(n/a|[0-9.]+\\s*(months?|years?|weeks?))$",
+          "ignore_case": true
+      },
+      "adverse_reaction_maxdurationoftreatment_negative": {
+          "type": "less_than_or_equal_to_value_extracted",
+          "columns": ["adverse_reaction_max_duration_of_treatment"],
+          "threshold": 0,
+          "number_extract_regex": "^([0-9.]+)"
+      },
+
+
+
+      "adverse_reaction_maxdurationoftreatmentweeks_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["adverse_reaction_max_duration_of_treatment_weeks"]
+      },
+      "adverse_reaction_maxdurationoftreatmentweeks_non_numeric": {
+          "type": "non_numeric", "columns": ["adverse_reaction_max_duration_of_treatment_weeks"]
+      },
+      "adverse_reaction_maxdurationoftreatmentweeks_negative": {
+          "type": "less_than_or_equal_to_value", "columns": ["adverse_reaction_max_duration_of_treatment_weeks"], "threshold": 0
+      },
+
+
+
+      "deriveddurationoftreatment_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["derived_duration_of_treatment"]
+      },
+      "deriveddurationoftreatment_non_numeric": {
+          "type": "regex_not_match",
+          "columns": ["derived_duration_of_treatment"],
+          "pattern": "^(n/a|[0-9.]+)$",
+          "ignore_case": true
+      },
+      "deriveddurationoftreatment_negative": {
+          "type": "less_than_or_equal_to_value", "columns": ["derived_duration_of_treatment"], "threshold": 0
+      },
+
+
+
+      "derivedsetdurationunder1year_whitespace": {
+          "type": "leading_trailing_whitespace", "columns": ["derived_set_duration_under_1_year"]
+      },
+      "derivedsetdurationunder1year_invalid_values": {
+          "type": "not_in_set",
+          "columns": ["derived_set_duration_under_1_year"],
+          "allowed": ["yes", "no"]
+      },
+
+      "derivedsetdurationunder1year_inconsistent_with_derivedduration": {
+          "type": "conditional_consistency",
+          "columns": ["derived_duration_of_treatment", "derived_set_duration_under_1_year"],
+          "conditions": {
+          "duration_less_52_weeks": {
+              "duration_threshold": 52,
+              "setduration_values": {
+              "yes": "less",
+              "no": "greater_equal"
+              }
+          }
+          }
+      },
+
+        "created_date_invalid": {
+            "type": "datetime_not_valid",
+            "columns": ["created_date"]
+        },
+
+
+        "modified_date_invalid": {
+            "type": "datetime_not_valid",
+            "columns": ["modified_date"]
+        },
+
+        "date_order_invalid": {
+            "type": "date_order_check",
+            "columns": ["created_date", "modified_date"]
+        },
+
+        "processed_by Leading/Trailing Whitespace": {
+            "type": "leading_trailing_whitespace",
+            "columns": ["processed_by"]
+        },
+
+
+        "job_id Leading/Trailing Whitespace": {
+            "type": "leading_trailing_whitespace",
+            "columns": ["job_id"]
+        },
+        "job_id_invalid_format": {
+            "type": "regex_not_match",
+            "columns": ["job_id"],
+            "pattern": "^[a-f0-9\\-]{36}$",
+            "ignore_case": true
+        },
+
+
+        "active_flag_invalid": {
+            "type": "not_in_set",
+            "columns": ["active_flag"],
+            "allowed": ["Y", "N"]
+        }
+
+    }
+  }

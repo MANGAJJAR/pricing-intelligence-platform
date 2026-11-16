@@ -1,0 +1,87 @@
+{
+  "clinical_details_prompt": {
+    "path": "config/prompts/clinical_details_prompt.yaml"
+  },
+
+  "indication_details_prompt": {
+    "path": "config/prompts/indication_details_prompt.yaml"
+  },
+
+  "dosage_details_prompt": {
+    "path": "config/prompts/dosage_details_prompt.yaml"
+  },
+
+  "adverse_reaction_details_prompt": {
+    "path": "config/prompts/adverse_reaction_details_prompt.yaml"
+  },
+
+  "image_details_prompt":{
+    "path": "config/prompts/image_details_prompt.yaml"
+  },
+
+  "base_dosage_details_prompt":{
+    "path": "config/prompts/base_dosage_details_prompt.yaml"
+  },
+
+  "base_adverse_reaction_details_prompt":{
+    "path": "config/prompts/base_adverse_reaction_details_prompt.yaml"
+  },
+
+  "derived_yearly_dosage_prompt":{
+    "path": "config/prompts/derived_yearly_dosage_prompt.yaml"
+  },
+
+  "derived_subsequent_year_dosage_prompt":{
+    "path": "config/prompts/derived_subsequent_year_dosage_prompt.yaml"
+  },
+
+  "derived_first_year_dosage_prompt":{
+    "path": "config/prompts/derived_first_year_dosage_prompt.yaml"
+  },
+
+  "derived_adverse_reaction_weeks_prompt":{
+    "path": "config/prompts/derived_adverse_reaction_weeks_prompt.yaml"
+  },
+
+  "llm_qc_rectification_prompt":{
+    "path": "config/prompts/llm_qc_rectification_prompt.yaml"
+  },
+
+  "api_llm": {
+        "url_oauth2": "https://federation.abbvie.com/as/token.oauth2",
+        "azure_endpoint":"https://prod.api.abbvienet.com/iliad/abbvie"
+  },
+
+  "trino_dailymed_dosing_raw_tbl_column_names":[
+    "drug_link_id","drug_url", "drug_name", "manufacturer", "disease_full", "disease_short", "indication",
+    "subindications", "usage", "lineoftherapy", "line_of_therapy_simplified",
+    "typeoftherapy", "combinationdrug", "combo_therapy_flag", "combo_1", "combo_2", "combo_3",
+    "recommended_dosage", "cycle_duration", "duration_of_treatment", "set_duration_less_than_a_year",
+    "number_of_cycles", "treatment_is_based_on", "method_of_administration", "patient_group",
+    "is_pediatric", "weight(kg)", "dose_per_kg", "flat_dose", "mg_per_dose",
+    "dosing_segment_used", "medications", "notes", "yearly_dosage", "yearly_cycles",
+    "subsequent_year_dosage_in_mg", "number_of_doses_in_subsequent_years", "first_year_dosage_in_mg",
+    "number_of_doses_in_first_year", "adverse_reaction_study_id", "adverse_reaction_median_duration_of_treatment",
+    "adverse_reaction_max_duration_of_treatment", "adverse_reaction_median_duration_of_treatment_(weeks)",
+    "adverse_reaction_max_duration_of_treatment_(weeks)", "derived_duration_of_treatment",
+    "derived_set_duration_under_1_year", "created_date", "modified_date", "processed_by","job_id", "active_flag"
+],
+
+  "trino_dailymed_dosing_master_tbl_column_names":[
+    "drug_link_id","drug_url", "drug_name", "manufacturer", "disease_full", "disease_short", "indication",
+    "subindications", "usage", "lineoftherapy", "line_of_therapy_simplified",
+    "typeoftherapy", "combinationdrug", "combo_therapy_flag", "combo_1", "combo_2", "combo_3",
+    "recommended_dosage", "cycle_duration", "duration_of_treatment", "set_duration_less_than_a_year",
+    "number_of_cycles", "treatment_is_based_on", "method_of_administration", "patient_group",
+    "is_pediatric", "weight(kg)", "dose_per_kg", "flat_dose", "mg_per_dose",
+    "dosing_segment_used", "medications", "notes", "yearly_dosage", "yearly_cycles",
+    "subsequent_year_dosage_in_mg", "number_of_doses_in_subsequent_years", "first_year_dosage_in_mg",
+    "number_of_doses_in_first_year", "adverse_reaction_study_id", "adverse_reaction_median_duration_of_treatment",
+    "adverse_reaction_max_duration_of_treatment", "adverse_reaction_median_duration_of_treatment_(weeks)",
+    "adverse_reaction_max_duration_of_treatment_(weeks)", "derived_duration_of_treatment",
+    "derived_set_duration_under_1_year", "created_date", "modified_date", "processed_by","job_id", "active_flag",
+    "approved_denied_by", "comments", "status", "approved_denied_date"
+
+  ]
+
+}

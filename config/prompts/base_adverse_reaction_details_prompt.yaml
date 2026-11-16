@@ -1,0 +1,5 @@
+base_adverse_reaction_details_prompt: "Extract adverse reaction data for {indication}\
+  \ ({short_form_of_disease}) from {stringc} and {additional_info}.\nDrug: {drug_name}.\n\
+  Output JSON format:\n[\n  {{\n    \"study_id\": \"Study 1\",\n    \"Median duration\
+  \ of treatment\": \"12 months\",\n    \"Max duration of treatment\": \"24 months\"\
+  \n  }}\n]\n"

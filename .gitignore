@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment variables & secrets
+.env
+*.env
+!.env.example
+
+# Logs
+log/*
+!log/.gitkeep
+*.log
+
+# Runtime directories
+checkpoints/*
+!checkpoints/.gitkeep
+outputs/*
+!outputs/.gitkeep
+uploads/*
+!uploads/.gitkeep
+
+# IDE and OS files
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

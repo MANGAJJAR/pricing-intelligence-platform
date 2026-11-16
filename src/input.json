@@ -1,0 +1,14 @@
+
+{
+  "drug_link_list":[
+    {
+     "Label":"ABIRATERONE ACETATE (abiraterone) tablet\nABIRATERONE ACETATE (abiraterone) tablet",
+     "Drug_URL":"https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c9eb9b46-f847-40a8-802c-a51b40406d5a",
+     "NDCs":["69238-1165-7","69238-1754-6"],
+     "Packager":"Amneal Pharmaceuticals NY LLC"
+    }
+   ],
+   "Processed_by":"Yash",
+   "genricName":"abiraterone acetate",
+   "process_type":"Dailymed Search"
+}
